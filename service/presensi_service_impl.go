@@ -52,9 +52,9 @@ func (service *PresensiServiceImpl) PresensiMasuk(ctx context.Context, request w
 
 	var status string
 	if nowhour >= hour && nowminute > minute {
-		status = "telat"
+		status = "Telat"
 	} else {
-		status = "tepat waktu"
+		status = "Tepat Waktu"
 	}
 
 	null := "-"
@@ -80,6 +80,44 @@ func (service *PresensiServiceImpl) PresensiMasuk(ctx context.Context, request w
 	return helper.ToPresensiMasukResponse(presensi)
 }
 
+func (service *PresensiServiceImpl) PresensiTidakMasuk(ctx context.Context, request web.PresensiTidakMasukRequest) web.PresensiTidakMasukResponse {
+	err := service.Validate.Struct(request)
+	helper.PanicIfError(err)
+	tx, err := service.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	//now := time.Now()
+	loc, err := time.LoadLocation("Asia/Jakarta") // mengatur zona waktu ke WIB
+	
+	helper.PanicIfError(err)
+	now := time.Now().In(loc)
+	nowhour := now.Hour()
+	nowminute := now.Minute()
+
+	null := "-"
+	presensi := domain.Presensi{
+		IdUser:           request.IdUser,
+		TanggalPresensi:  request.TanggalPresensi,
+		JamMasuk:         strconv.Itoa(nowhour) + "." + strconv.Itoa(nowminute),
+		KeteranganMasuk:  "Tidak Masuk",
+		Latitude:         null,
+		Longitude:        null,
+		Selfie:           null,
+		Alamat:           null,
+		JamPulang:        null,
+		TanggalPulang:    null,
+		Status:           "Selesai",
+		KeteranganKeluar: null,
+		KeteranganTidakMasuk:             request.KeteranganTidakMasuk,
+		LinkBukti:        request.LinkBukti,
+	}
+
+	presensi = service.PresensiRepository.PresensiTidakMasuk(ctx, tx, presensi)
+
+	return helper.ToPresensiTidakMasukResponse(presensi)
+}
+
 func (service *PresensiServiceImpl) PresensiKeluar(ctx context.Context, request web.PresensiKeluarRequest) web.PresensiKeluarResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
@@ -103,19 +141,19 @@ func (service *PresensiServiceImpl) PresensiKeluar(ctx context.Context, request 
 	nowminute := now.Minute()
 	var status string
 	if nowhour <= hour && nowminute > minute {
-		status = "pulang lebih awal"
+		status = "Pulang Lebih Awal"
 	} else {
-		status = "pulang tepat waktu"
+		status = "Pulang Tepat Waktu"
 	}
 
 	waktu := time.Now().UnixNano() / 1000000
 	presensi := domain.Presensi{
 		IdUser:           request.IdUser,
-		TanggalPresensi:  request.TanggalPresesnsi,
+		TanggalPresensi:  request.TanggalPresensi,
 		TanggalPulang:    strconv.Itoa(int(waktu)),
 		JamPulang:        strconv.Itoa(nowhour) + "." + strconv.Itoa(nowminute),
 		KeteranganKeluar: status,
-		Status:           "selesai",
+		Status:           "Selesai",
 	}
 
 	presensi = service.PresensiRepository.PresensiKeluar(ctx, tx, presensi)

@@ -21,6 +21,7 @@ func NewRouter(
 	router.PUT("/api/presensikeluar", PresensiController.PresensiKeluar)
 	router.GET("/api/riwayatpresensi/:userId", PresensiController.Riwayat)
 	router.POST("/api/presensimasuk", PresensiController.PresensiMasuk)
+	router.POST("/api/presensitidakmasuk", PresensiController.PresensiTidakMasuk)
 	router.POST("/api/sendotp", OtpController.SendOtp)
 	router.POST("/api/otpvalidation", OtpController.VerifikasiOtp)
 	router.POST("/api/register", UserController.CreateAkun)

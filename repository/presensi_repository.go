@@ -8,6 +8,7 @@ import (
 
 type PresensiRepository interface {
 	PresensiMasuk(ctx context.Context, tx *sql.Tx, presensi domain.Presensi) domain.Presensi
+	PresensiTidakMasuk(ctx context.Context, tx *sql.Tx, presensi domain.Presensi) domain.Presensi
 	PresensiKeluar(ctx context.Context, tx *sql.Tx, presensi domain.Presensi) domain.Presensi
 	Riwayat(ctx context.Context, tx *sql.Tx, presensi int) ([]domain.Presensi, error)
 }

@@ -32,6 +32,19 @@ func (controller *PresensiControllerImpl) PresensiMasuk(writer http.ResponseWrit
 	helper.WriteToResponseBody(writer, webResponse)
 }
 
+func (controller *PresensiControllerImpl) PresensiTidakMasuk(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	presensi := web.PresensiTidakMasukRequest{}
+	helper.ReadFromRequestBody(request, &presensi)
+
+	presensiResponse := controller.PresensiService.PresensiTidakMasuk(request.Context(), presensi)
+	webResponse := web.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   presensiResponse,
+	}
+	helper.WriteToResponseBody(writer, webResponse)
+}
+
 func (controller *PresensiControllerImpl) PresensiKeluar(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 
 	presensi := web.PresensiKeluarRequest{}

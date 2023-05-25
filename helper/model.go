@@ -106,6 +106,13 @@ func ToPresensiMasukResponse(presensi domain.Presensi) web.PresensiMasukResponse
 
 }
 
+func ToPresensiTidakMasukResponse(presensi domain.Presensi) web.PresensiTidakMasukResponse {
+	return web.PresensiTidakMasukResponse{
+		Keterangan: presensi.KeteranganMasuk,
+	}
+
+}
+
 func ToPresensiKeluarResponse(presensi domain.Presensi) web.PresensiKeluarResponse {
 	return web.PresensiKeluarResponse{
 		Keterangan: presensi.KeteranganKeluar,

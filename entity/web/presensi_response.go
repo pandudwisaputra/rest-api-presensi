@@ -5,6 +5,11 @@ type PresensiMasukResponse struct {
 	Keterangan string `json:"keterangan"`
 }
 
+type PresensiTidakMasukResponse struct {
+	IdPresensi int    `json:"id_presensi"`
+	Keterangan string `json:"keterangan"`
+}
+
 type PresensiKeluarResponse struct {
 	Keterangan string `json:"keterangan"`
 }

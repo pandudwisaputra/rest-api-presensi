@@ -28,6 +28,19 @@ func (repository *PresensiRepositoryImpl) PresensiMasuk(ctx context.Context, tx 
 	return presensi
 }
 
+func (repository *PresensiRepositoryImpl) PresensiTidakMasuk(ctx context.Context, tx *sql.Tx, presensi domain.Presensi) domain.Presensi {
+	script := "insert into presensi_masuk(id_user, tanggal_presensi, jam_masuk, jam_keluar, tanggal_keluar, keterangan_masuk, keterangan_keluar, latitude, longitude, selfie, alamat, status_presensi, keterangan_tidak_masuk, link_bukti) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+	result, err := tx.ExecContext(ctx, script, presensi.IdUser, presensi.TanggalPresensi, presensi.JamMasuk, presensi.JamPulang, presensi.TanggalPulang, presensi.KeteranganMasuk, presensi.KeteranganKeluar, presensi.Latitude, presensi.Longitude, presensi.Selfie, presensi.Alamat, presensi.Status, presensi.KeteranganTidakMasuk, presensi.LinkBukti)
+	helper.PanicIfError(err)
+
+	id, err := result.LastInsertId()
+	helper.PanicIfError(err)
+
+	presensi.IdUser = int(id)
+
+	return presensi
+}
+
 func (repository *PresensiRepositoryImpl) PresensiKeluar(ctx context.Context, tx *sql.Tx, presensi domain.Presensi) domain.Presensi {
 	script := "update presensi_masuk set jam_keluar = ?, tanggal_keluar = ?,keterangan_keluar = ? ,  status_presensi = ? where id_user = ? and tanggal_presensi = ?"
 	_, err := tx.ExecContext(ctx, script, presensi.JamPulang, presensi.TanggalPulang, presensi.KeteranganKeluar, presensi.Status, presensi.IdUser, presensi.TanggalPresensi)
