@@ -59,20 +59,20 @@ func (service *PresensiServiceImpl) PresensiMasuk(ctx context.Context, request w
 
 	null := "-"
 	presensi := domain.Presensi{
-		IdUser:           request.IdUser,
-		TanggalPresensi:  request.TanggalPresensi,
-		JamMasuk:         strconv.Itoa(nowhour) + "." + strconv.Itoa(nowminute),
-		KeteranganMasuk:  status,
-		Latitude:         request.Latitude,
-		Longitude:        request.Longitude,
-		Selfie:           request.Selfie,
-		Alamat:           request.Alamat,
-		JamPulang:        null,
-		TanggalPulang:    null,
-		Status:           null,
-		KeteranganKeluar: null,
-		KeteranganTidakMasuk:             null,
-		LinkBukti:        null,
+		IdUser:               request.IdUser,
+		TanggalPresensi:      request.TanggalPresensi,
+		JamMasuk:             strconv.Itoa(nowhour) + "." + strconv.Itoa(nowminute),
+		KeteranganMasuk:      status,
+		Latitude:             request.Latitude,
+		Longitude:            request.Longitude,
+		Selfie:               request.Selfie,
+		Alamat:               request.Alamat,
+		JamPulang:            null,
+		TanggalPulang:        null,
+		Status:               null,
+		KeteranganKeluar:     null,
+		KeteranganTidakMasuk: null,
+		LinkBukti:            null,
 	}
 
 	presensi = service.PresensiRepository.PresensiMasuk(ctx, tx, presensi)
@@ -89,7 +89,7 @@ func (service *PresensiServiceImpl) PresensiTidakMasuk(ctx context.Context, requ
 
 	//now := time.Now()
 	loc, err := time.LoadLocation("Asia/Jakarta") // mengatur zona waktu ke WIB
-	
+
 	helper.PanicIfError(err)
 	now := time.Now().In(loc)
 	nowhour := now.Hour()
@@ -97,20 +97,20 @@ func (service *PresensiServiceImpl) PresensiTidakMasuk(ctx context.Context, requ
 
 	null := "-"
 	presensi := domain.Presensi{
-		IdUser:           request.IdUser,
-		TanggalPresensi:  request.TanggalPresensi,
-		JamMasuk:         strconv.Itoa(nowhour) + "." + strconv.Itoa(nowminute),
-		KeteranganMasuk:  "Tidak Masuk",
-		Latitude:         null,
-		Longitude:        null,
-		Selfie:           null,
-		Alamat:           null,
-		JamPulang:        null,
-		TanggalPulang:    null,
-		Status:           "Selesai",
-		KeteranganKeluar: null,
-		KeteranganTidakMasuk:             request.KeteranganTidakMasuk,
-		LinkBukti:        request.LinkBukti,
+		IdUser:               request.IdUser,
+		TanggalPresensi:      request.TanggalPresensi,
+		JamMasuk:             strconv.Itoa(nowhour) + "." + strconv.Itoa(nowminute),
+		KeteranganMasuk:      "Tidak Masuk",
+		Latitude:             null,
+		Longitude:            null,
+		Selfie:               null,
+		Alamat:               null,
+		JamPulang:            null,
+		TanggalPulang:        null,
+		Status:               "Selesai",
+		KeteranganKeluar:     null,
+		KeteranganTidakMasuk: request.KeteranganTidakMasuk,
+		LinkBukti:            request.LinkBukti,
 	}
 
 	presensi = service.PresensiRepository.PresensiTidakMasuk(ctx, tx, presensi)
@@ -149,6 +149,7 @@ func (service *PresensiServiceImpl) PresensiKeluar(ctx context.Context, request 
 	waktu := time.Now().UnixNano() / 1000000
 	presensi := domain.Presensi{
 		IdUser:           request.IdUser,
+		IdPresensi:       request.IdPresensi,
 		TanggalPresensi:  request.TanggalPresensi,
 		TanggalPulang:    strconv.Itoa(int(waktu)),
 		JamPulang:        strconv.Itoa(nowhour) + "." + strconv.Itoa(nowminute),

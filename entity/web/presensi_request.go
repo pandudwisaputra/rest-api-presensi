@@ -10,14 +10,15 @@ type PresensiMasukRequest struct {
 }
 
 type PresensiTidakMasukRequest struct {
-	IdUser          int    `validate:"required" json:"id_user"`
-	TanggalPresensi string `validate:"required" json:"tanggal_presensi"`
-	KeteranganTidakMasuk        string `validate:"required" json:"keterangan_tidak_masuk"`
-	LinkBukti       string `validate:"required" json:"link_bukti"`
+	IdUser               int    `validate:"required" json:"id_user"`
+	TanggalPresensi      string `validate:"required" json:"tanggal_presensi"`
+	KeteranganTidakMasuk string `validate:"required" json:"keterangan_tidak_masuk"`
+	LinkBukti            string `validate:"required" json:"link_bukti"`
 }
 
 type PresensiKeluarRequest struct {
-	IdUser           int    `validate:"required" json:"id_user"`
+	IdUser          int    `validate:"required" json:"id_user"`
+	IdPresensi      int    `validate:"required" json:"id_presensi"`
 	TanggalPresensi string `validate:"required" json:"tanggal_presensi"`
 }
 

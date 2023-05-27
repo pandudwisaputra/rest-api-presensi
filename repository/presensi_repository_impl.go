@@ -23,7 +23,7 @@ func (repository *PresensiRepositoryImpl) PresensiMasuk(ctx context.Context, tx 
 	id, err := result.LastInsertId()
 	helper.PanicIfError(err)
 
-	presensi.IdUser = int(id)
+	presensi.IdPresensi = int(id)
 
 	return presensi
 }
@@ -36,14 +36,14 @@ func (repository *PresensiRepositoryImpl) PresensiTidakMasuk(ctx context.Context
 	id, err := result.LastInsertId()
 	helper.PanicIfError(err)
 
-	presensi.IdUser = int(id)
+	presensi.IdPresensi = int(id)
 
 	return presensi
 }
 
 func (repository *PresensiRepositoryImpl) PresensiKeluar(ctx context.Context, tx *sql.Tx, presensi domain.Presensi) domain.Presensi {
-	script := "update presensi_masuk set jam_keluar = ?, tanggal_keluar = ?,keterangan_keluar = ? ,  status_presensi = ? where id_user = ? and tanggal_presensi = ?"
-	_, err := tx.ExecContext(ctx, script, presensi.JamPulang, presensi.TanggalPulang, presensi.KeteranganKeluar, presensi.Status, presensi.IdUser, presensi.TanggalPresensi)
+	script := "update presensi_masuk set jam_keluar = ?, tanggal_keluar = ?,keterangan_keluar = ? ,  status_presensi = ? where id_user = ? and id_presensi = ? and tanggal_presensi = ?"
+	_, err := tx.ExecContext(ctx, script, presensi.JamPulang, presensi.TanggalPulang, presensi.KeteranganKeluar, presensi.Status, presensi.IdUser, presensi.IdPresensi, presensi.TanggalPresensi)
 	helper.PanicIfError(err)
 	return presensi
 }

@@ -101,6 +101,7 @@ func ToGetOfficeDataResponse(office domain.Office) web.OfficeResponse {
 
 func ToPresensiMasukResponse(presensi domain.Presensi) web.PresensiMasukResponse {
 	return web.PresensiMasukResponse{
+		IdPresensi: presensi.IdPresensi,
 		Keterangan: presensi.KeteranganMasuk,
 	}
 
@@ -108,6 +109,7 @@ func ToPresensiMasukResponse(presensi domain.Presensi) web.PresensiMasukResponse
 
 func ToPresensiTidakMasukResponse(presensi domain.Presensi) web.PresensiTidakMasukResponse {
 	return web.PresensiTidakMasukResponse{
+		IdPresensi: presensi.IdPresensi,
 		Keterangan: presensi.KeteranganMasuk,
 	}
 
