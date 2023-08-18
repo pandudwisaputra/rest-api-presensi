@@ -10,7 +10,6 @@ type Presensi struct {
 	KeteranganMasuk  string
 	KeteranganKeluar string
 	Latitude         string
-	Selfie           string
 	Longitude        string
 	Alamat           string
 	Status           string

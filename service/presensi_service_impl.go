@@ -38,7 +38,7 @@ func (service *PresensiServiceImpl) PresensiMasuk(ctx context.Context, request w
 	office := helper.Presensi{}
 	office = helper.GetOffice()
 
-	parts := strings.Split(office.JamMasuk, ".")
+	parts := strings.Split(office.JamMasuk, ":")
 	hour, err := strconv.Atoi(parts[0])
 	minute, err := strconv.Atoi(parts[1])
 
@@ -61,11 +61,10 @@ func (service *PresensiServiceImpl) PresensiMasuk(ctx context.Context, request w
 	presensi := domain.Presensi{
 		IdUser:               request.IdUser,
 		TanggalPresensi:      request.TanggalPresensi,
-		JamMasuk:             strconv.Itoa(nowhour) + "." + strconv.Itoa(nowminute),
+		JamMasuk:             strconv.Itoa(nowhour) + ":" + strconv.Itoa(nowminute),
 		KeteranganMasuk:      status,
 		Latitude:             request.Latitude,
 		Longitude:            request.Longitude,
-		Selfie:               request.Selfie,
 		Alamat:               request.Alamat,
 		JamPulang:            null,
 		TanggalPulang:        null,
@@ -103,7 +102,6 @@ func (service *PresensiServiceImpl) PresensiTidakMasuk(ctx context.Context, requ
 		KeteranganMasuk:      "Tidak Masuk",
 		Latitude:             null,
 		Longitude:            null,
-		Selfie:               null,
 		Alamat:               null,
 		JamPulang:            null,
 		TanggalPulang:        null,
@@ -128,7 +126,7 @@ func (service *PresensiServiceImpl) PresensiKeluar(ctx context.Context, request 
 	office := helper.Presensi{}
 	office = helper.GetOffice()
 
-	parts := strings.Split(office.JamPulang, ".")
+	parts := strings.Split(office.JamPulang, ":")
 	hour, err := strconv.Atoi(parts[0])
 	helper.PanicIfError(err)
 	minute, err := strconv.Atoi(parts[1])
@@ -140,10 +138,10 @@ func (service *PresensiServiceImpl) PresensiKeluar(ctx context.Context, request 
 	nowhour := now.Hour()
 	nowminute := now.Minute()
 	var status string
-	if nowhour <= hour && nowminute > minute {
-		status = "Pulang Lebih Awal"
-	} else {
+	if nowhour >= hour && nowminute > minute {
 		status = "Pulang Tepat Waktu"
+	} else {
+		status = "Pulang Lebih Awal"
 	}
 
 	waktu := time.Now().UnixNano() / 1000000
@@ -152,7 +150,7 @@ func (service *PresensiServiceImpl) PresensiKeluar(ctx context.Context, request 
 		IdPresensi:       request.IdPresensi,
 		TanggalPresensi:  request.TanggalPresensi,
 		TanggalPulang:    strconv.Itoa(int(waktu)),
-		JamPulang:        strconv.Itoa(nowhour) + "." + strconv.Itoa(nowminute),
+		JamPulang:        strconv.Itoa(nowhour) + ":" + strconv.Itoa(nowminute),
 		KeteranganKeluar: status,
 		Status:           "Selesai",
 	}
@@ -174,4 +172,18 @@ func (service *PresensiServiceImpl) Riwayat(ctx context.Context, request int) []
 	}
 
 	return helper.ToRiwayatPresensiResponses(riwayatPresensi)
+}
+
+func (service *PresensiServiceImpl) PresensiCheck(ctx context.Context, request int) web.PresensiCheckResponse {
+
+	tx, err := service.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	presensiCheck, err := service.PresensiRepository.PresensiCheck(ctx, tx, request)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return helper.ToPresensiCheckResponse(presensiCheck)
 }

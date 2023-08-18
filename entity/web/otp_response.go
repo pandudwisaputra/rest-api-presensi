@@ -2,7 +2,6 @@ package web
 
 type OtpResponse struct {
 	Email  string `json:"email"`
-	NoHp   string `json:"no_hp"`
 	Status string `json:"status"`
 }
 

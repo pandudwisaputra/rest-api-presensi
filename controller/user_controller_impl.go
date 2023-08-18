@@ -34,6 +34,20 @@ func (controller *UserControllerImpl) CreateAkun(writer http.ResponseWriter, req
 	helper.WriteToResponseBody(writer, webResponse)
 }
 
+func (controller *UserControllerImpl) CreateRecognition(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	recognitionCreateRequest := web.CreateRecognitionRequest{}
+	helper.ReadFromRequestBody(request, &recognitionCreateRequest)
+
+	recognitionResponse := controller.UserService.CreateRecognition(request.Context(), recognitionCreateRequest)
+	webResponse := web.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   recognitionResponse,
+	}
+
+	helper.WriteToResponseBody(writer, webResponse)
+}
+
 func (controller *UserControllerImpl) Login(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	loginRequest := web.LoginRequest{}
 	helper.ReadFromRequestBody(request, &loginRequest)
@@ -58,6 +72,34 @@ func (controller *UserControllerImpl) GetProfile(writer http.ResponseWriter, req
 		Code:   200,
 		Status: "OK",
 		Data:   profileResponse,
+	}
+	helper.WriteToResponseBody(writer, webResponse)
+}
+
+func (controller *UserControllerImpl) GetRecognition(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	userId := params.ByName("userId")
+	id, err := strconv.Atoi(userId)
+	helper.PanicIfError(err)
+
+	recognitionResponse := controller.UserService.GetRecognition(request.Context(), id)
+	webResponse := web.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   recognitionResponse,
+	}
+	helper.WriteToResponseBody(writer, webResponse)
+}
+
+func (controller *UserControllerImpl) GetSmartphoneCheck(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	userId := params.ByName("userId")
+	id, err := strconv.Atoi(userId)
+	helper.PanicIfError(err)
+
+	smartphoneCheckResponse := controller.UserService.GetSmartphoneCheck(request.Context(), id)
+	webResponse := web.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   smartphoneCheckResponse,
 	}
 	helper.WriteToResponseBody(writer, webResponse)
 }
@@ -97,6 +139,18 @@ func (controller *UserControllerImpl) KarywanCheck(writer http.ResponseWriter, r
 		Code:   200,
 		Status: "OK",
 		Data:   karyawanResponse,
+	}
+	helper.WriteToResponseBody(writer, webResponse)
+}
+
+func (controller *UserControllerImpl) StatusKarywanCheck(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	userEmail := params.ByName("userEmail")
+
+	StatuskaryawanResponse := controller.UserService.StatusKaryawanCheck(request.Context(), userEmail)
+	webResponse := web.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   StatuskaryawanResponse,
 	}
 	helper.WriteToResponseBody(writer, webResponse)
 }

@@ -10,4 +10,5 @@ type PresensiService interface {
 	PresensiTidakMasuk(ctx context.Context, request web.PresensiTidakMasukRequest) web.PresensiTidakMasukResponse
 	PresensiKeluar(ctx context.Context, request web.PresensiKeluarRequest) web.PresensiKeluarResponse
 	Riwayat(ctx context.Context, request int) []web.RiwayatPresensiResponse
+	PresensiCheck(ctx context.Context, request int) web.PresensiCheckResponse
 }

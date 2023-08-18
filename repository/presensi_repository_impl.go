@@ -16,8 +16,8 @@ func NewPresensiRepositoryImpl() *PresensiRepositoryImpl {
 }
 
 func (repository *PresensiRepositoryImpl) PresensiMasuk(ctx context.Context, tx *sql.Tx, presensi domain.Presensi) domain.Presensi {
-	script := "insert into presensi_masuk(id_user, tanggal_presensi, jam_masuk, jam_keluar, tanggal_keluar, keterangan_masuk, keterangan_keluar, latitude, longitude, selfie, alamat, status_presensi, keterangan_tidak_masuk, link_bukti) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-	result, err := tx.ExecContext(ctx, script, presensi.IdUser, presensi.TanggalPresensi, presensi.JamMasuk, presensi.JamPulang, presensi.TanggalPulang, presensi.KeteranganMasuk, presensi.KeteranganKeluar, presensi.Latitude, presensi.Longitude, presensi.Selfie, presensi.Alamat, presensi.Status, presensi.KeteranganTidakMasuk, presensi.LinkBukti)
+	script := "insert into presensi_masuk(id_user, tanggal_presensi, jam_masuk, jam_keluar, tanggal_keluar, keterangan_masuk, keterangan_keluar, latitude, longitude, alamat, status_presensi, keterangan_tidak_masuk, link_bukti) values (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+	result, err := tx.ExecContext(ctx, script, presensi.IdUser, presensi.TanggalPresensi, presensi.JamMasuk, presensi.JamPulang, presensi.TanggalPulang, presensi.KeteranganMasuk, presensi.KeteranganKeluar, presensi.Latitude, presensi.Longitude, presensi.Alamat, presensi.Status, presensi.KeteranganTidakMasuk, presensi.LinkBukti)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()
@@ -29,8 +29,8 @@ func (repository *PresensiRepositoryImpl) PresensiMasuk(ctx context.Context, tx 
 }
 
 func (repository *PresensiRepositoryImpl) PresensiTidakMasuk(ctx context.Context, tx *sql.Tx, presensi domain.Presensi) domain.Presensi {
-	script := "insert into presensi_masuk(id_user, tanggal_presensi, jam_masuk, jam_keluar, tanggal_keluar, keterangan_masuk, keterangan_keluar, latitude, longitude, selfie, alamat, status_presensi, keterangan_tidak_masuk, link_bukti) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-	result, err := tx.ExecContext(ctx, script, presensi.IdUser, presensi.TanggalPresensi, presensi.JamMasuk, presensi.JamPulang, presensi.TanggalPulang, presensi.KeteranganMasuk, presensi.KeteranganKeluar, presensi.Latitude, presensi.Longitude, presensi.Selfie, presensi.Alamat, presensi.Status, presensi.KeteranganTidakMasuk, presensi.LinkBukti)
+	script := "insert into presensi_masuk(id_user, tanggal_presensi, jam_masuk, jam_keluar, tanggal_keluar, keterangan_masuk, keterangan_keluar, latitude, longitude, alamat, status_presensi, keterangan_tidak_masuk, link_bukti) values (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+	result, err := tx.ExecContext(ctx, script, presensi.IdUser, presensi.TanggalPresensi, presensi.JamMasuk, presensi.JamPulang, presensi.TanggalPulang, presensi.KeteranganMasuk, presensi.KeteranganKeluar, presensi.Latitude, presensi.Longitude, presensi.Alamat, presensi.Status, presensi.KeteranganTidakMasuk, presensi.LinkBukti)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()
@@ -49,7 +49,7 @@ func (repository *PresensiRepositoryImpl) PresensiKeluar(ctx context.Context, tx
 }
 
 func (repository *PresensiRepositoryImpl) Riwayat(ctx context.Context, tx *sql.Tx, presensi int) ([]domain.Presensi, error) {
-	script := "select id_presensi, id_user, tanggal_presensi, jam_masuk, jam_keluar, tanggal_keluar, keterangan_masuk, keterangan_keluar, latitude, longitude, alamat, status_presensi from presensi_masuk where id_user = ?"
+	script := "select id_presensi, id_user, tanggal_presensi, jam_masuk, jam_keluar, tanggal_keluar, keterangan_masuk, keterangan_keluar, latitude, longitude, alamat, status_presensi, keterangan_tidak_masuk, link_bukti from presensi_masuk where id_user = ?"
 	rows, err := tx.QueryContext(ctx, script, presensi)
 	helper.PanicIfError(err)
 	defer rows.Close()
@@ -57,7 +57,7 @@ func (repository *PresensiRepositoryImpl) Riwayat(ctx context.Context, tx *sql.T
 	var newhistory []domain.Presensi
 	for rows.Next() {
 		history := domain.Presensi{}
-		err := rows.Scan(&history.IdPresensi, &history.IdUser, &history.TanggalPresensi, &history.JamMasuk, &history.JamPulang, &history.TanggalPulang, &history.KeteranganMasuk, &history.KeteranganKeluar, &history.Latitude, &history.Longitude, &history.Alamat, &history.Status)
+		err := rows.Scan(&history.IdPresensi, &history.IdUser, &history.TanggalPresensi, &history.JamMasuk, &history.JamPulang, &history.TanggalPulang, &history.KeteranganMasuk, &history.KeteranganKeluar, &history.Latitude, &history.Longitude, &history.Alamat, &history.Status, &history.KeteranganTidakMasuk, &history.LinkBukti)
 		helper.PanicIfError(err)
 		newhistory = append(newhistory, history)
 
@@ -69,4 +69,21 @@ func (repository *PresensiRepositoryImpl) Riwayat(ctx context.Context, tx *sql.T
 		gagal = nil
 	}
 	return newhistory, gagal
+}
+
+func (repository *PresensiRepositoryImpl) PresensiCheck(ctx context.Context, tx *sql.Tx, presensi int) (domain.Presensi, error) {
+	script := "select id_presensi, id_user, tanggal_presensi, jam_masuk, jam_keluar, tanggal_keluar, keterangan_masuk, keterangan_keluar, latitude, longitude, alamat, status_presensi from presensi_masuk where id_user = ? ORDER BY id_presensi DESC LIMIT 1"
+	rows, err := tx.QueryContext(ctx, script, presensi)
+	helper.PanicIfError(err)
+	PresensiCheck := domain.Presensi{}
+	defer rows.Close()
+
+	if rows.Next() {
+		
+		err := rows.Scan(&PresensiCheck.IdPresensi, &PresensiCheck.IdUser, &PresensiCheck.TanggalPresensi, &PresensiCheck.JamMasuk, &PresensiCheck.JamPulang, &PresensiCheck.TanggalPulang, &PresensiCheck.KeteranganMasuk, &PresensiCheck.KeteranganKeluar, &PresensiCheck.Latitude, &PresensiCheck.Longitude, &PresensiCheck.Alamat, &PresensiCheck.Status)
+		helper.PanicIfError(err)
+		return PresensiCheck, nil
+	} else {
+		return PresensiCheck, errors.New("Not Found")
+	}
 }

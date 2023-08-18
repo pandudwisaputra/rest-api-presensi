@@ -16,8 +16,8 @@ func NewOtpRepositoryImpl() *OtpRepositoryImpl {
 }
 
 func (repository *OtpRepositoryImpl) SendOTP(ctx context.Context, tx *sql.Tx, otp domain.Otp) domain.Otp {
-	script := "insert into otp(email, no_hp, otp, time_otp) values (?,?,?,?)"
-	result, err := tx.ExecContext(ctx, script, otp.Email, otp.NoHp, otp.Otp, otp.Time)
+	script := "insert into otp(email, otp, time_otp) values (?,?,?)"
+	result, err := tx.ExecContext(ctx, script, otp.Email, otp.Otp, otp.Time)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()

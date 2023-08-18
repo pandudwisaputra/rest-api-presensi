@@ -10,4 +10,5 @@ type PresensiController interface {
 	PresensiTidakMasuk(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	PresensiKeluar(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 	Riwayat(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
+	PresensiCheck(writer http.ResponseWriter, request *http.Request, params httprouter.Params)
 }

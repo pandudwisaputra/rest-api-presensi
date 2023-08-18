@@ -4,9 +4,10 @@ type User struct {
 	IdUser      int
 	IdKaryawan  string
 	Email       string
-	Nama        string
-	NoHp        string
 	Password    string
-	StatusLogin string
 	Avatar      string
+	Status      string
+	NamaLengkap string
+	NoHp        string
+	AndroidId        string
 }

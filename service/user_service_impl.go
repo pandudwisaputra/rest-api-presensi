@@ -38,16 +38,38 @@ func (service *UserServiceImpl) CreateAkun(ctx context.Context, request web.Crea
 	akun := domain.User{
 		Email:       request.Email,
 		IdKaryawan:  request.IdKaryawan,
-		Nama:        request.Nama,
-		NoHp:        request.NoHp,
 		Password:    pwhash,
-		StatusLogin: "0",
 		Avatar:      "-",
+		AndroidId: request.AndroidId,
 	}
 
 	akun = service.UserRepository.CreateAkun(ctx, tx, akun)
 
 	return helper.ToCreateAkunResponse(akun)
+}
+
+func (service *UserServiceImpl) CreateRecognition(ctx context.Context, request web.CreateRecognitionRequest) web.CreateRecognitionResponse {
+	err := service.Validate.Struct(request)
+	helper.PanicIfError(err)
+	tx, err := service.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	recognition := domain.Recognition{
+		IdUser: request.IdUser,
+		Key: request.Key,
+		Name: request.Name,
+		LocationLeft: request.LocationLeft,
+		LocationTop: request.LocationTop,
+		LocationRight: request.LocationRight,
+		LocationBottom: request.LocationBottom,
+		Embeddings: request.Embeddings,
+		Distance: request.Distance,
+	}
+
+	recognition = service.UserRepository.CreateRecognition(ctx, tx, recognition)
+
+	return helper.ToCreateRecognitionResponse(recognition)
 }
 
 func (service *UserServiceImpl) Login(ctx context.Context, request web.LoginRequest) web.LoginResponse {
@@ -73,10 +95,12 @@ func (service *UserServiceImpl) Login(ctx context.Context, request web.LoginRequ
 	}
 
 	login.Email = request.Email
-	login.StatusLogin = "success"
+	login.Status = "Success"
 
 	return helper.ToLoginResponse(login)
 }
+
+
 
 func (service *UserServiceImpl) GetProfile(ctx context.Context, id_user int) web.GetProfileResponse {
 	tx, err := service.DB.Begin()
@@ -91,6 +115,32 @@ func (service *UserServiceImpl) GetProfile(ctx context.Context, id_user int) web
 	return helper.ToGetProfileResponse(profile)
 }
 
+func (service *UserServiceImpl) GetRecognition(ctx context.Context, id_user int) web.GetRecognitionResponse {
+	tx, err := service.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	recognition, err := service.UserRepository.GetRecognition(ctx, tx, id_user)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return helper.ToGetRecognitionResponse(recognition)
+}
+
+func (service *UserServiceImpl) GetSmartphoneCheck(ctx context.Context, id_user int) web.GetSmartphoneCheckResponse {
+	tx, err := service.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	smartphoneCheck, err := service.UserRepository.GetSmartphoneCheck(ctx, tx, id_user)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return helper.ToGetSmartphoneCheckResponse(smartphoneCheck)
+}
+
 func (service *UserServiceImpl) EmailCheck(ctx context.Context, email, idKaryawan string) web.GetEmailCheckResponse {
 	tx, err := service.DB.Begin()
 	helper.PanicIfError(err)
@@ -103,6 +153,7 @@ func (service *UserServiceImpl) EmailCheck(ctx context.Context, email, idKaryawa
 
 	return helper.ToGetEmailResponse(emailCheck)
 }
+
 
 func (service *UserServiceImpl) UpdatePassword(ctx context.Context, request web.UpdatePasswordRequest) web.UpdatePasswordResponse {
 	err := service.Validate.Struct(request)
@@ -136,6 +187,19 @@ func (service *UserServiceImpl) KaryawanCheck(ctx context.Context, karyawan, idK
 	}
 
 	return helper.ToGetKaryawanResponse(karyawancheck)
+}
+
+func (service *UserServiceImpl) StatusKaryawanCheck(ctx context.Context, karyawan string) web.GetStatusKaryawanResponse {
+	tx, err := service.DB.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	statuskaryawancheck, err := service.UserRepository.StatusKaryawanCheck(ctx, tx, karyawan)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return helper.ToGetStatusKaryawanResponse(statuskaryawancheck)
 }
 
 func (service *UserServiceImpl) GetIdUser(ctx context.Context, email string) web.GetIdUserResponse {

@@ -59,6 +59,7 @@ func (controller *PresensiControllerImpl) PresensiKeluar(writer http.ResponseWri
 	helper.WriteToResponseBody(writer, webResponse)
 }
 
+
 func (controller *PresensiControllerImpl) Riwayat(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	userId := params.ByName("userId")
 	id, err := strconv.Atoi(userId)
@@ -69,6 +70,20 @@ func (controller *PresensiControllerImpl) Riwayat(writer http.ResponseWriter, re
 		Code:   200,
 		Status: "OK",
 		Data:   riwayatResponse,
+	}
+	helper.WriteToResponseBody(writer, webResponse)
+}
+
+func (controller *PresensiControllerImpl) PresensiCheck(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	userId := params.ByName("userId")
+	id, err := strconv.Atoi(userId)
+	helper.PanicIfError(err)
+
+	presensiCheckResponse := controller.PresensiService.PresensiCheck(request.Context(), id)
+	webResponse := web.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   presensiCheckResponse,
 	}
 	helper.WriteToResponseBody(writer, webResponse)
 }

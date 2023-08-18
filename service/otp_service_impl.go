@@ -41,7 +41,6 @@ func (service *OtpServiceImpl) SendOtp(ctx context.Context, request web.OtpReque
 	otp := domain.Otp{
 		IdUser: request.IdUser,
 		Email:  request.Email,
-		NoHp:   request.NoHp,
 		Otp:    gen_otp,
 		Time:   milis,
 	}
